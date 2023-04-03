@@ -24,21 +24,25 @@ class Title(models.Model):
     # rating = models.PositiveIntegerField(null=True)
     description = models.TextField(
         'Описание',
-        help_text='Описание произведения')
+        help_text='Описание произведения',
+        blank=False
+        )
     genre = models.ManyToManyField(
         Genre,
         verbose_name='Жанр',
         help_text='Жанр произведения',
-        on_delete=models.SET_NULL,
+        # on_delete=models.SET_NULL,
         related_name='titles',
-        blank=True)
+        blank=True
+        )
     category = models.ForeignKey(
         Category,
         verbose_name='Категория',
         help_text='Категория произведения',
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         related_name='titles',
-        blank=True)
+        blank=True
+        )
 
     # def __str__(self):
     #     return self.description

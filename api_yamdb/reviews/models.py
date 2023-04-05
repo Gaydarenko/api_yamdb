@@ -10,18 +10,19 @@ class Genre(models.Model):
     name = models.CharField('Жанр', max_length=256)
     slug = models.SlugField(unique=True, max_length=50)
 
+    def __str__(self):
+        return self.name
+
 
 class Title(models.Model):
     name = models.CharField(
         'Название произведения',
         max_length=256,
         help_text='Название произведения')
-    # TODO ограничения цифры года
     year = models.PositiveIntegerField(
         'Год выпуска произведения',
         help_text='Год выпуска произведения')
-    # TODO уточнить откуда rating
-    # rating = models.PositiveIntegerField(null=True)
+    rating = models.PositiveIntegerField(null=True, default=None)
     description = models.TextField(
         'Описание',
         help_text='Описание произведения',
@@ -44,5 +45,13 @@ class Title(models.Model):
         blank=True
         )
 
-    # def __str__(self):
-    #     return self.description
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'category'],
+                name='unique_name_category'
+            )
+        ]
+
+    def __str__(self):
+        return self.name

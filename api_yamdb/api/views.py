@@ -1,4 +1,4 @@
-from rest_framework import filters, viewsets
+from rest_framework import filters, pagination, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
@@ -10,7 +10,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('slug',)
+    search_fields = ('name',)
     # permission_classes = (IsAdminOrReadOnly,)
 
 
@@ -18,7 +18,7 @@ class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('slug',)
+    search_fields = ('name',)
     # permission_classes = (IsAdminOrReadOnly,)
 
 
@@ -27,4 +27,5 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     search_fields = ('category__slug', 'genre__slug', 'name', 'year',)
+    pagination_class = pagination.LimitOffsetPagination
     # permission_classes = (IsAdminOrReadOnly,)

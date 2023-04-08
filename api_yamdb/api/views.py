@@ -1,13 +1,15 @@
 from .permissions import IsAdminModeratorOwnerOrReadOnly
 from django.shortcuts import get_object_or_404
 from .serializers import (CommentSerializer, ReviewSerializer, UserSerializer,
-                          UserEditSerializer)
-from rest_framework import permissions, status, viewsets
-from reviews.models import Review, User, Title
-from .permissions import IsAdmin, IsAdminModeratorOwnerOrReadOnly
+                          UserEditSerializer, CategorySerializer, GenreSerializer,
+                          TitleSerializer)
+from rest_framework import permissions, status, viewsets, pagination, filters, mixins
+from reviews.models import Review, User, Title, Category, Genre
+from .permissions import IsAdmin, IsAdminOrReadOnly, IsAdminModeratorOwnerOrReadOnly
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -44,7 +46,7 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = "username"
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = pagination.PageNumberPagination
     permission_classes = (IsAdmin,)
 
     @action(
@@ -72,3 +74,38 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class CategoryViewSet(viewsets.ModelViewSet, mixins.CreateModelMixin,
+                      mixins.DestroyModelMixin, mixins.ListModelMixin):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('^name',)
+    permission_classes = (IsAdminOrReadOnly,)
+
+
+class GenreViewSet(viewsets.ModelViewSet, mixins.CreateModelMixin,
+                   mixins.DestroyModelMixin, mixins.ListModelMixin):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('^name',)
+    permission_classes = (IsAdminOrReadOnly,)
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+    filter_backends = (DjangoFilterBackend,)
+    search_fields = ('category__slug', 'genre__slug', 'name', 'year',)
+    pagination_class = pagination.LimitOffsetPagination
+    permission_classes = (IsAdminOrReadOnly,)
+
+
+class SignUp():
+    ...
+
+
+class GetToken:
+    ...

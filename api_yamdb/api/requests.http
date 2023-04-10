@@ -1,0 +1,95 @@
+http://127.0.0.1:8000/api/v1/posts/
+
+###
+http://127.0.0.1:8000/users/
+
+###
+
+PATCH http://127.0.0.1:8000/cats/10/
+Content-Type: application/json
+
+{
+    "birth_year": 2001
+} 
+
+###
+POST  http://127.0.0.1:8000/api/v1/follow/
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc5MzQyODc4LCJqdGkiOiI1ZTQ4MTgzYmI5MWM0NTk4OTNhMmVhYzllNTg0MTdkZiIsInVzZXJfaWQiOjJ9.m9-vYhgvYBJTCHYezlJfvJG-wOKrFDCV3RpttxnIByU
+Content-Type: application/json
+
+{
+    "username": "admin2",
+    "password": "admin2admin2"      
+}
+###
+POST  http://127.0.0.1:8000/api/v1/follow/
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc5MzQyODc4LCJqdGkiOiI1ZTQ4MTgzYmI5MWM0NTk4OTNhMmVhYzllNTg0MTdkZiIsInVzZXJfaWQiOjJ9.m9-vYhgvYBJTCHYezlJfvJG-wOKrFDCV3RpttxnIByU
+Content-Type: application/json
+
+{
+    "following": "admin"
+     
+}
+###
+DELETE  http://127.0.0.1:8000/api/v1/posts/2/comments/1/
+Authorization: Token 48ef8b4c480dba62f57b3b17b7492a3575b10f52
+Content-Type: application/json
+
+{
+    "text": "fffffffffff2"
+}
+###
+
+POST http://127.0.0.1:8000/api/v1/auth/signup/
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "username": "stringg"
+}
+###
+PATCH  http://127.0.0.1:8000/api/v1/posts/1/
+Authorization: Token 48ef8b4c480dba62f57b3b17b7492a3575b10f52
+Content-Type: application/json
+
+{
+  
+    "text": "Вечеромv",
+    "group": 1
+}
+###
+
+GET     http://127.0.0.1:8000/api/v1/posts/
+
+Content-Type: application/json
+
+{
+    
+}
+
+###
+POST   http://127.0.0.1:8000/api/v1/auth/signup
+Content-Type: application/json
+
+{
+    "email": "userg@exampleg.com",
+    "username": "strgingg"
+}
+
+###
+
+POST http://127.0.0.1:8000/cats/
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc4NjE3MzY0LCJqdGkiOiIzZTkyYTMxOTNlMTg0MGYwYjU2OWE4YmNiYzEzNWU2MiIsInVzZXJfaWQiOjJ9.hhDDaquDualYr-S1nlN7hOopUmNz5V8z3hjUpJT9sus
+Content-Type: application/json
+
+{
+    "name": "Барсикr",
+    "color": "Black",
+    "birth_year": 2020,
+    "owner": 1
+}
+###
+{
+  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY3OTM0Mjg3OCwianRpIjoiODViOTViNzdjNzY1NDZmMWJiNWIxMzdlOWQ0ZDNhZWEiLCJ1c2VyX2lkIjoyfQ.S5BZKuA9IEubTslIDHkLEo55fxRVJQlAAi-AgmGGkdo",
+  "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc5MzQyODc4LCJqdGkiOiI1ZTQ4MTgzYmI5MWM0NTk4OTNhMmVhYzllNTg0MTdkZiIsInVzZXJfaWQiOjJ9.m9-vYhgvYBJTCHYezlJfvJG-wOKrFDCV3RpttxnIByU"
+}

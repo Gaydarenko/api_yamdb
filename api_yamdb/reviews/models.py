@@ -4,62 +4,41 @@ from django.contrib.auth.models import AbstractUser
 
 LIMIT_NAME = 256
 LIMIT_SLUG = 50
+CHOICES = (
+    ('user', 'user'),
+    ('moderator', 'moderator'),
+    ('admin', 'admin'),
+)
 
 
 class User(AbstractUser):
-    ADMIN = 'admin'
-    MODERATOR = 'moderator'
-    USER = 'user'
-    ROLES = [
-        (ADMIN, 'Administrator'),
-        (MODERATOR, 'Moderator'),
-        (USER, 'User'),
-    ]
-
-    email = models.EmailField(
-        verbose_name='Адрес электронной почты',
-        unique=True,
-    )
     username = models.CharField(
-        verbose_name='Имя пользователя',
-        max_length=150,
-        null=True,
-        unique=True
-    )
-    role = models.CharField(
-        verbose_name='Роль',
-        max_length=50,
-        choices=ROLES,
-        default=USER
+        verbose_name='username', max_length=150, unique=True)
+    email = models.EmailField(
+        verbose_name='email address', max_length=254, unique=True
     )
     bio = models.TextField(
-        verbose_name='О себе',
-        null=True,
-        blank=True
+        'Биография',
+        blank=True,
     )
+    role = models.CharField(max_length=10, choices=CHOICES, default='user')
 
-    @property
-    def is_moderator(self):
-        return self.role == self.MODERATOR
+    confirmation_code = models.CharField(max_length=256, blank=True)
 
     @property
     def is_admin(self):
-        return self.role == self.ADMIN
+        "User ia admin?"
+        return self.role == 'admin'
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    @property
+    def is_moderator(self):
+        "User moderator?"
+        return self.role == 'moderator'
 
     class Meta:
         ordering = ['id']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-
-        constraints = [
-            models.CheckConstraint(
-                check=~models.Q(username__iexact="me"),
-                name="username_is_not_me"
-            )
-        ]
 
 
 class Review(models.Model):

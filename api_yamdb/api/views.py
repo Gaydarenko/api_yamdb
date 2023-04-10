@@ -1,11 +1,17 @@
 from .permissions import IsAdminModeratorOwnerOrReadOnly
+from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from .serializers import (CommentSerializer, ReviewSerializer, UserSerializer,
-                          UserEditSerializer, CategorySerializer, GenreSerializer,
-                          TitleSerializer)
-from rest_framework import permissions, status, viewsets, pagination, filters, mixins
+from .serializers import (CommentSerializer, ReviewSerializer, UsersSerializer,
+                          GetTokenSerializer, CategorySerializer,
+                          GenreSerializer, SignUpSerializer, TitleSerializer)
+from rest_framework.decorators import action, api_view
+from rest_framework import permissions, status, viewsets, pagination
+from rest_framework import filters, mixins
+from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Review, User, Title, Category, Genre
-from .permissions import IsAdmin, IsAdminOrReadOnly, IsAdminModeratorOwnerOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsAdminModeratorOwnerOrReadOnly
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -42,38 +48,62 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, review=review)
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    lookup_field = "username"
+class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
-    pagination_class = pagination.PageNumberPagination
-    permission_classes = (IsAdmin,)
+    serializer_class = UsersSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    lookup_field = 'username'
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('username', )
+    http_method_names = ('patch', 'post', 'get', 'delete')
 
-    @action(
-        methods=[
-            "get",
-            "patch",
-        ],
-        detail=False,
-        url_path="me",
-        permission_classes=[permissions.IsAuthenticated],
-        serializer_class=UserEditSerializer,
-    )
-    def users_own_profile(self, request):
-        user = request.user
-        if request.method == "GET":
-            serializer = self.get_serializer(user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        if request.method == "PATCH":
+    @action(methods=['get', 'patch'], detail=False,
+            permission_classes=(permissions.IsAuthenticated,), url_path='me')
+    def get_current_user_info(self, request):
+        serializer = UsersSerializer(request.user)
+        if request.method == 'PATCH':
+            user = request.user
             serializer = self.get_serializer(
-                user,
-                data=request.data,
-                partial=True
-            )
+                user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
-            serializer.save()
+            serializer.save(role=request.user.role)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return Response(serializer.data)
+
+
+@api_view(['POST'])
+def api_get_token(request):
+    serializer = GetTokenSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.validated_data
+    username = serializer.validated_data.get('username')
+    user = get_object_or_404(User, username=username)
+    if default_token_generator.check_token(user, data['confirmation_code']):
+        return Response(
+            {'token': str(AccessToken.for_user(user))},
+            status=status.HTTP_201_CREATED)
+    raise ValidationError('Invalid value')
+
+
+@api_view(['POST'])
+def api_signup(request):
+    serializer = SignUpSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    username = serializer.validated_data['username']
+    email = serializer.validated_data['email']
+    try:
+        user, _ = User.objects.get_or_create(
+            **serializer.validated_data
+        )
+    except Exception:
+        return Response(
+            'Такой username или e-mail уже используется.',
+            status=status.HTTP_400_BAD_REQUEST)
+    user, _ = User.objects.get_or_create(username=username, email=email)
+    code = default_token_generator.make_token(user)
+    message = f'Здравствуйте, {username}! Ваш код подтверждения: {code}'
+    send_mail(_, message, 'support@yamdb.com', [email])
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(viewsets.ModelViewSet, mixins.CreateModelMixin,
@@ -101,11 +131,3 @@ class TitleViewSet(viewsets.ModelViewSet):
     search_fields = ('category__slug', 'genre__slug', 'name', 'year',)
     pagination_class = pagination.LimitOffsetPagination
     permission_classes = (IsAdminOrReadOnly,)
-
-
-class SignUp():
-    ...
-
-
-class GetToken:
-    ...

@@ -4,33 +4,27 @@ from rest_framework.generics import get_object_or_404
 from reviews.models import Category, Comment, Genre, Review, Title, User
 from rest_framework.validators import UniqueValidator
 import datetime as dt
+from .validators import validate_username
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UsersSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role')
+        model = User
+
+
+class GetTokenSerializer(serializers.Serializer):
     username = serializers.CharField(
-        validators=[
-            UniqueValidator(queryset=User.objects.all())
-        ],
-        required=True,
-    )
-    email = serializers.EmailField(
-        validators=[
-            UniqueValidator(queryset=User.objects.all())
-        ]
-    )
-
-    class Meta:
-        fields = ('username', 'email', 'first_name',
-                  'last_name', 'bio', 'role')
-        model = User
+        max_length=150, validators=[validate_username],)
+    confirmation_code = serializers.CharField()
 
 
-class UserEditSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = ('username', 'email', 'first_name',
-                  'last_name', 'bio', 'role')
-        model = User
-        read_only_fields = ('role',)
+class SignUpSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=254,)
+    username = serializers.CharField(
+        validators=[validate_username], max_length=150)
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -54,7 +48,7 @@ class ReviewSerializer(serializers.ModelSerializer):
                 raise ValidationError('Вы не можете добавить более'
                                       'одного отзыва на произведение')
         return data
-        
+
     class Meta:
         model = Review
         fields = '__all__'
@@ -106,7 +100,7 @@ class CommentSerializer(serializers.ModelSerializer):
         slug_field='username',
         read_only=True
     )
-    
+
     class Meta:
         model = Comment
         fields = '__all__'

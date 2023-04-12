@@ -2,12 +2,13 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from reviews.models import Category, Comment, Genre, Review, Title, User
-from rest_framework.validators import UniqueValidator
 import datetime as dt
 from .validators import validate_username
 
 
 class UsersSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        validators=[validate_username], max_length=150)
 
     class Meta:
         fields = ('username', 'email', 'first_name',

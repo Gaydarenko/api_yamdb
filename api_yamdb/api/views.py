@@ -12,7 +12,7 @@ from rest_framework import filters, mixins
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Review, User, Title, Category, Genre
 from .permissions import IsAdminOrReadOnly, IsAdminModeratorOwnerOrReadOnly
-from rest_framework.pagination import PageNumberPagination
+from .permissions import IsAdmin
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
@@ -51,7 +51,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsAdmin,)
     lookup_field = 'username'
     filter_backends = (filters.SearchFilter, )
     search_fields = ('username', )
@@ -99,7 +99,7 @@ def api_signup(request):
         return Response(
             'Такой username или e-mail уже используется.',
             status=status.HTTP_400_BAD_REQUEST)
-    user, _ = User.objects.get_or_create(username=username, email=email)
+    #user, _ = User.objects.get_or_create(username=username, email=email)
     code = default_token_generator.make_token(user)
     message = f'Здравствуйте, {username}! Ваш код подтверждения: {code}'
     send_mail(_, message, 'support@yamdb.com', [email])

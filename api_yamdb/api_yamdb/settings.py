@@ -22,12 +22,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_simplejwt',
-    'djoser',
     'django_filters',
+    'rest_framework_simplejwt',
     'api.apps.ApiConfig',
     'reviews.apps.ReviewsConfig',
 ]
+
+AUTH_USER_MODEL = 'reviews.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+
+    ),
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -127,3 +135,5 @@ SIMPLE_JWT = {
 
 RESERVED_USERNAMES = ('me',)
 VALID_USERNAME = r'^[\w.@+-]+\Z'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

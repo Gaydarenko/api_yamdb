@@ -112,6 +112,7 @@ class CategoryViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     filter_backends = (filters.SearchFilter,)
     search_fields = ('^name',)
     permission_classes = (IsAdminOrReadOnly,)
+    lookup_field = 'slug'
 
 
 class GenreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
@@ -121,6 +122,7 @@ class GenreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     filter_backends = (filters.SearchFilter,)
     search_fields = ('^name',)
     permission_classes = (IsAdminOrReadOnly,)
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):

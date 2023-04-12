@@ -2,13 +2,13 @@ from csv import DictReader
 
 from django.core.management.base import BaseCommand
 
-from reviews.models import Category, Genre, Title, Comment, Review, User
-# from reviews.models import Category, Genre, Title
-
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 DATA = {
-    'category': lambda x: Category.objects.create(id=x['id'], name=x['name'], slug=x['slug']),
-    'genre': lambda x: Genre.objects.create(id=x['id'], name=x['name'], slug=x['slug']),
+    'category': lambda x: Category.objects.create(
+        id=x['id'], name=x['name'], slug=x['slug']),
+    'genre': lambda x: Genre.objects.create(
+        id=x['id'], name=x['name'], slug=x['slug']),
     'titles': lambda x: Title.objects.create(
         id=x['id'],
         name=x['name'],

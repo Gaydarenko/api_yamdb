@@ -1,10 +1,13 @@
+import datetime as dt
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
-from reviews.models import Category, Comment, Genre, Review, Title, User
-import datetime as dt
-from .validators import validate_username
 from rest_framework.validators import UniqueValidator
+
+from reviews.models import Category, Comment, Genre, Review, Title, User
+
+from .validators import validate_username
 
 
 class UsersSerializer(serializers.ModelSerializer):

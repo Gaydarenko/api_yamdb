@@ -105,8 +105,8 @@ def api_signup(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CategoryViewSet(viewsets.ModelViewSet, mixins.CreateModelMixin,
-                      mixins.DestroyModelMixin, mixins.ListModelMixin):
+class CategoryViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                      mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
@@ -114,8 +114,8 @@ class CategoryViewSet(viewsets.ModelViewSet, mixins.CreateModelMixin,
     permission_classes = (IsAdminOrReadOnly,)
 
 
-class GenreViewSet(viewsets.ModelViewSet, mixins.CreateModelMixin,
-                   mixins.DestroyModelMixin, mixins.ListModelMixin):
+class GenreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                   mixins.ListModelMixin, viewsets.GenericViewSet,):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)

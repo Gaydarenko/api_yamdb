@@ -1,6 +1,5 @@
 from .permissions import IsAdminModeratorOwnerOrReadOnly
 from django.contrib.auth.tokens import default_token_generator
-from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from .serializers import (CommentSerializer, ReviewSerializer, UsersSerializer,
@@ -82,7 +81,8 @@ def api_get_token(request):
         return Response(
             {'token': str(AccessToken.for_user(user))},
             status=status.HTTP_201_CREATED)
-    raise ValidationError('Invalid value')
+    return Response(serializer.validated_data,
+                    status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -99,7 +99,6 @@ def api_signup(request):
         return Response(
             'Такой username или e-mail уже используется.',
             status=status.HTTP_400_BAD_REQUEST)
-    #user, _ = User.objects.get_or_create(username=username, email=email)
     code = default_token_generator.make_token(user)
     message = f'Здравствуйте, {username}! Ваш код подтверждения: {code}'
     send_mail(_, message, 'support@yamdb.com', [email])

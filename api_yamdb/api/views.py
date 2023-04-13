@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
@@ -31,6 +32,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title_id = self.kwargs.get('title_id')
         title = get_object_or_404(Title, id=title_id)
         serializer.save(author=self.request.user, title=title)
+
+        title.rating = int(Review.objects.filter(title=title).aggregate(Avg('score'))['score__avg'])
+        title.save(update_fields=['rating'])
 
 
 class CommentViewSet(viewsets.ModelViewSet):

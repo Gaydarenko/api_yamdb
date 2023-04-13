@@ -88,7 +88,7 @@ class Title(models.Model):
         null=True,
         blank=False)
     rating = models.IntegerField(
-        "Рейтинг", null=True, default=0)
+        "Рейтинг", null=True, default=None)
 
     class Meta:
         default_related_name = 'title'

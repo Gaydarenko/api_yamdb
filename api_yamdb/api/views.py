@@ -16,7 +16,7 @@ from .permissions import (IsAdmin, IsAdminModeratorOwnerOrReadOnly,
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, GetTokenSerializer,
                           ReviewSerializer, SignUpSerializer, TitleSerializer,
-                          UsersSerializer)
+                          TitleCreateSerializer, UsersSerializer)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -132,8 +132,13 @@ class GenreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
+
     filter_backends = (DjangoFilterBackend,)
     search_fields = ('category__slug', 'genre__slug', 'name', 'year',)
     pagination_class = pagination.LimitOffsetPagination
     permission_classes = (IsAdminOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return TitleSerializer
+        return TitleCreateSerializer

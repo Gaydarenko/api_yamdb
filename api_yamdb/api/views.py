@@ -1,6 +1,6 @@
-from django.db.models import Avg
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (filters, mixins, pagination, permissions, status,
@@ -11,12 +11,14 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from reviews.models import Category, Genre, Review, Title, User
 
+from .filters import TitleFilter
 from .permissions import (IsAdmin, IsAdminModeratorOwnerOrReadOnly,
                           IsAdminOrReadOnly)
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, GetTokenSerializer,
-                          ReviewSerializer, SignUpSerializer, TitleSerializer,
-                          TitleCreateSerializer, UsersSerializer)
+                          ReviewSerializer, SignUpSerializer,
+                          TitleCreateSerializer, TitleSerializer,
+                          UsersSerializer)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -33,7 +35,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title = get_object_or_404(Title, id=title_id)
         serializer.save(author=self.request.user, title=title)
 
-        title.rating = int(Review.objects.filter(title=title).aggregate(Avg('score'))['score__avg'])
+        title.rating = int(
+            Review.objects.filter(title=title).aggregate(Avg('score'))
+            ['score__avg'])
         title.save(update_fields=['rating'])
 
 
@@ -134,9 +138,10 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
 
     filter_backends = (DjangoFilterBackend,)
-    search_fields = ('category__slug', 'genre__slug', 'name', 'year',)
+    # filterset_fields = ('category__slug', 'genre__slug', 'name', 'year',)
     pagination_class = pagination.LimitOffsetPagination
     permission_classes = (IsAdminOrReadOnly,)
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrieve':

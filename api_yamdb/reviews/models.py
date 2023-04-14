@@ -2,8 +2,10 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+LIMIT_EMAIL = 254
 LIMIT_NAME = 256
 LIMIT_SLUG = 50
+LIMIT_USERNAME = 150
 CHOICES = (
     ('user', 'user'),
     ('moderator', 'moderator'),
@@ -13,9 +15,9 @@ CHOICES = (
 
 class User(AbstractUser):
     username = models.CharField(
-        verbose_name='username', max_length=150, unique=True)
+        verbose_name='username', max_length=LIMIT_USERNAME, unique=True)
     email = models.EmailField(
-        verbose_name='email address', max_length=254, unique=True
+        verbose_name='email address', max_length=LIMIT_EMAIL, unique=True
     )
     bio = models.TextField(
         'Биография',
@@ -87,8 +89,6 @@ class Title(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=False)
-    rating = models.IntegerField(
-        "Рейтинг", null=True, default=None)
 
     class Meta:
         default_related_name = 'title'

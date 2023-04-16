@@ -1,5 +1,3 @@
-import datetime as dt
-
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -22,7 +20,6 @@ class UsersSerializer(serializers.ModelSerializer):
         fields = ('username', 'email', 'first_name',
                   'last_name', 'bio', 'role')
         model = User
-
 
 
 class GetTokenSerializer(serializers.Serializer):

@@ -2,15 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-LIMIT_EMAIL = 254
-LIMIT_NAME = 256
-LIMIT_SLUG = 50
-LIMIT_USERNAME = 150
-CHOICES = (
-    ('user', 'user'),
-    ('moderator', 'moderator'),
-    ('admin', 'admin'),
-)
+from .constants import (CHOICES, LIMIT_EMAIL, LIMIT_NAME, LIMIT_SLUG,
+                        LIMIT_USERNAME)
 
 
 class User(AbstractUser):

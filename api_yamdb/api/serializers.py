@@ -8,7 +8,7 @@ from rest_framework.validators import UniqueValidator
 from reviews.models import (LIMIT_EMAIL, LIMIT_USERNAME, Category, Comment,
                             Genre, Review, Title, User)
 
-from .validators import validate_username
+from .validators import validate_username, validate_year
 
 
 class UsersSerializer(serializers.ModelSerializer):
@@ -18,9 +18,11 @@ class UsersSerializer(serializers.ModelSerializer):
                     ], max_length=LIMIT_USERNAME)
 
     class Meta:
+        # Здесь не стали менять, т.к. в exclude будет не меньше полей указано
         fields = ('username', 'email', 'first_name',
                   'last_name', 'bio', 'role')
         model = User
+
 
 
 class GetTokenSerializer(serializers.Serializer):
@@ -79,16 +81,11 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(read_only=True, many=True)
+    year = serializers.IntegerField(validators=[validate_year])
 
     class Meta:
         model = Title
         fields = '__all__'
-
-    def validate_year(self, value):
-        current_year = dt.date.today().year
-        if value > current_year:
-            raise serializers.ValidationError('Check year value.')
-        return value
 
 
 class TitleCreateSerializer(serializers.ModelSerializer):
@@ -98,16 +95,11 @@ class TitleCreateSerializer(serializers.ModelSerializer):
     genre = serializers.SlugRelatedField(
         queryset=Genre.objects.all(),
         slug_field='slug', many=True)
+    year = serializers.IntegerField(validators=[validate_year])
 
     class Meta:
         model = Title
         fields = '__all__'
-
-    def validate_year(self, value):
-        current_year = dt.date.today().year
-        if value > current_year:
-            raise serializers.ValidationError('Check year value.')
-        return value
 
 
 class CommentSerializer(serializers.ModelSerializer):

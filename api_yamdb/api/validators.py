@@ -1,4 +1,5 @@
 import re
+import datetime as dt
 
 from django.core.exceptions import ValidationError
 
@@ -11,3 +12,10 @@ def validate_username(username):
     if not re.search(VALID_USERNAME, username):
         unmatched = re.sub(VALID_USERNAME, '', str(username))
         raise ValidationError(f'Обнаружены недопустимые символы: {unmatched}!')
+
+
+def validate_year(value):
+    current_year = dt.date.today().year
+    if value > current_year:
+        raise ValidationError('Check year value.')
+    return value
